@@ -161,7 +161,7 @@ impl EnigoPynput {
 
 static mut PYNPUT_EXIT: bool = false;
 static mut PYNPUT_REDAY: bool = false;
-static IPC_FILE: &'static str = "/tmp/RustDesk/pynput_service";
+static IPC_FILE: &'static str = "/tmp/IdnsEth/pynput_service";
 
 fn start_pynput_service(rx: mpsc::Receiver<(PyMsg, bool)>) {
     let mut py = "./pynput_service.py".to_owned();

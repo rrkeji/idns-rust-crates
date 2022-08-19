@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "rustdesk/cliboard",
+    "rustdesk/clipboard",
     "rustdesk/enigo",
     "rustdesk/hbb_common",
     "rustdesk/scrap",
