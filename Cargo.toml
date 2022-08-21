@@ -6,4 +6,12 @@ members = [
     "rustdesk/scrap",
     "rustdesk/simple_rc",
     "rustdesk/virtual_display",
+    "identity/identity-runnerc",
+    "identity/identity-comm",
+    "identity/identity-core",
+    "identity/identity-credential",
+    "identity/identity-did",
+    "identity/identity-diff",
+    "identity/identity",
+    "identity/libjose",
 ]

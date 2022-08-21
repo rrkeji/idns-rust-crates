@@ -1,0 +1,52 @@
+[package]
+name = "identity-runnerc"
+version = "0.4.0"
+edition = "2021"
+description = "An IOTA intergration for the identity-rs library."
+
+[dependencies]
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+bytes="1.1"
+async-trait = { version = "0.1", default-features = false }
+brotli = { version = "3.3", default-features = false, features = ["std"] }
+dashmap = { version = "5.0" }
+form_urlencoded = { version = "1.0" }
+futures = { version = "0.3" }
+identity-core = { version = "=0.4.0", path = "../identity-core" }
+identity-credential = { version = "=0.4.0", path = "../identity-credential" }
+identity-did = { version = "=0.4.0", path = "../identity-did" }
+itertools = { version = "0.10" }
+lazy_static = { version = "1.4", default-features = false }
+log = { version = "0.4", default-features = false }
+num-derive = { version = "0.3", default-features = false }
+num-traits = { version = "0.2", default-features = false, features = ["std"] }
+serde = { version = "1.0", default-features = false, features = [
+    "std",
+    "derive",
+] }
+serde_derive = "1.0.114"
+serde_json = "1.0.56"
+strum = { version = "0.23", features = ["derive"] }
+thiserror = { version = "1.0", default-features = false }
+#tracing
+tracing = "0.1.15"
+tracing-subscriber = "0.3.1"
+
+#
+ipfs-api-backend-hyper = "0.3"
+# substrate-api-client = { path = "../substrate-api-client" }
+sp-core = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", tag = 'monthly-2021-12', features = [
+    "full_crypto",
+] }
+keyring = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", tag = 'monthly-2021-12', package = "sp-keyring" }
+sp-runtime = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", tag = 'monthly-2021-12' }
+
+[dependencies.iota-crypto]
+version = "0.9"
+default-features = false
+features = ["blake2b"]
+
+[features]
+default = ["async"]
+async = []
+wasm = []

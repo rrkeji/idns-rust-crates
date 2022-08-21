@@ -1,0 +1,19 @@
+[package]
+name = "identity-credential"
+version = "0.4.0"
+edition = "2021"
+description = "An implementation of the Verfiable Credentials standard."
+
+[dependencies]
+identity-core = { version = "=0.4.0", path = "../identity-core" }
+identity-did = { version = "=0.4.0", path = "../identity-did" }
+lazy_static = { version = "1.4", default-features = false }
+serde = { version = "1.0", default-features = false, features = [
+    "std",
+    "derive",
+] }
+strum = { version = "0.23", features = ["derive"] }
+thiserror = { version = "1.0", default-features = false }
+
+[dev-dependencies]
+serde_json = { version = "1.0" }
