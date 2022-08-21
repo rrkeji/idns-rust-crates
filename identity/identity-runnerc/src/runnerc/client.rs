@@ -36,21 +36,15 @@ impl Client {
     }
 
     /// 存储值，并返回内容ID
-    pub fn set_value(&self, value: &String) -> Option<String> {
+    pub async fn set_value(&self, value: &String) -> Option<String> {
         //
         //保存到到IPFS
         let data = Cursor::new(value.clone());
         tracing::debug!("保存文档到IPFS:{}", value);
 
-        let handle = Handle::current();
-        let handle_std = std::thread::spawn(move || {
-            handle.block_on(async move {
-                let client = crate::utils::get_ipfs_client();
-                client.add(data).await
-            })
-        });
+        let client = crate::utils::get_ipfs_client();
 
-        if let Ok(res_result) = handle_std.join() {
+        if let res_result = client.add(data).await {
             match res_result {
                 Ok(res) => {
                     tracing::debug!("保存到IPFS:{:#?}", res);
@@ -66,33 +60,20 @@ impl Client {
         }
     }
 
-    pub fn get_value(&self, cid: &String) -> Option<String> {
+    pub async fn get_value(&self, cid: &String) -> Option<String> {
         //
-        let handle = Handle::current();
         let cid_copy = cid.clone();
-
-        let handle_std = std::thread::spawn(move || {
-            handle.block_on(async move {
-                let client = crate::utils::get_ipfs_client();
-                //读取数据
-                let mut stream = client.cat(cid_copy.as_str());
-                let mut buf = BytesMut::with_capacity(40960);
-                while let Some(parts) = stream.next().await {
-                    // bytes.
-                    if let Ok(bs) = parts {
-                        buf.put(bs);
-                    }
-                }
-                buf
-            })
-        });
-
-        if let Ok(buf) = handle_std.join() {
-            tracing::debug!("保存IPFS成功");
-            Some(String::from_utf8(buf.to_vec()).unwrap())
-        } else {
-            None
+        let client = crate::utils::get_ipfs_client();
+        //读取数据
+        let mut stream = client.cat(cid_copy.as_str());
+        let mut buf = BytesMut::with_capacity(40960);
+        while let Some(parts) = stream.next().await {
+            // bytes.
+            if let Ok(bs) = parts {
+                buf.put(bs);
+            }
         }
+        Some(String::from_utf8(buf.to_vec()).unwrap())
     }
 
     /// Publishes an [`RunnercDocument`] to the Tangle.
@@ -125,7 +106,7 @@ impl Client {
     pub async fn publish_json<T: ToJson>(&self, index: &str, data: &T) -> Result<Receipt> {
         println!("index:{},data:{:#?}", index, data.to_json());
         //保存
-        let cid_option = self.set_value(&data.to_json().unwrap());
+        let cid_option = self.set_value(&data.to_json().unwrap()).await;
         match cid_option {
             Some(cid) => Ok(Receipt::new(
                 self.network.clone(),
@@ -165,7 +146,7 @@ impl Client {
         // TODO cid
         let cid = String::from("");
         tracing::debug!("read_document CID string > |{}|", cid);
-        if let Some(msg) = self.get_value(&cid) {
+        if let Some(msg) = self.get_value(&cid).await {
             tracing::debug!("read_document string > |{}|", msg);
             //反序列化
             let core_document_result = RunnercDocument::from_json_slice(msg.as_str());
@@ -189,7 +170,7 @@ impl Client {
         // let message_ids: Box<[MessageId]> = Self::read_message_index(&self.client, index).await?;
         // let messages: Vec<Message> = Self::read_message_data(&self.client, &message_ids).await?;
 
-        if let Some(msg) = self.get_value(&String::from(index)) {
+        if let Some(msg) = self.get_value(&String::from(index)).await {
             Ok(vec![Message {
                 network_id: 0,
                 message_id: String::from(index),

@@ -6,7 +6,7 @@ description = "An IOTA intergration for the identity-rs library."
 
 [dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
-bytes="1.1"
+bytes = "1.1"
 async-trait = { version = "0.1", default-features = false }
 brotli = { version = "3.3", default-features = false, features = ["std"] }
 dashmap = { version = "5.0" }
@@ -33,7 +33,7 @@ tracing = "0.1.15"
 tracing-subscriber = "0.3.1"
 
 #
-ipfs-api-backend-hyper = "0.3"
+ipfs-api-backend-hyper = "0.5"
 
 [dependencies.iota-crypto]
 version = "0.9"

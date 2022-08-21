@@ -1,1 +1,0 @@
-pub const SUBSTRATE_WSS_URL: &str = "ws://127.0.0.1:9944";
