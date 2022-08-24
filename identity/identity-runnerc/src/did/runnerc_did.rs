@@ -211,8 +211,8 @@ impl RunnercDID {
   /// Normalizes the DID `method_id` by removing the default network segment if present.
   ///
   /// E.g.
-  /// - `"did:runnerc:main:123" -> "did:runnerc:123"` is normalized
-  /// - `"did:runnerc:dev:123" -> "did:runnerc:dev:123"` is unchanged
+  /// - `"did:idns:main:123" -> "did:idns:123"` is normalized
+  /// - `"did:idns:dev:123" -> "did:idns:dev:123"` is unchanged
   fn normalize(mut did: CoreDID) -> CoreDID {
     let segments: Segments<'_> = Segments(did.method_id());
 
@@ -376,33 +376,33 @@ mod tests {
 
   #[test]
   fn test_parse_did_valid() {
-    assert!(RunnercDID::parse(format!("did:runnerc:{}", TAG)).is_ok());
-    assert!(RunnercDID::parse(format!("did:runnerc:main:{}", TAG)).is_ok());
-    assert!(RunnercDID::parse(format!("did:runnerc:dev:{}", TAG)).is_ok());
-    assert!(RunnercDID::parse(format!("did:runnerc:custom:{}", TAG)).is_ok());
+    assert!(RunnercDID::parse(format!("did:idns:{}", TAG)).is_ok());
+    assert!(RunnercDID::parse(format!("did:idns:main:{}", TAG)).is_ok());
+    assert!(RunnercDID::parse(format!("did:idns:dev:{}", TAG)).is_ok());
+    assert!(RunnercDID::parse(format!("did:idns:custom:{}", TAG)).is_ok());
   }
 
   #[test]
   fn test_parse_did_url_valid() {
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:{}", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:{}#fragment", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:{}?somequery=somevalue", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:{}?somequery=somevalue#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:{}", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:{}#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:{}?somequery=somevalue", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:{}?somequery=somevalue#fragment", TAG)).is_ok());
 
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:main:{}", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:main:{}#fragment", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:main:{}?somequery=somevalue", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:main:{}?somequery=somevalue#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:main:{}", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:main:{}#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:main:{}?somequery=somevalue", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:main:{}?somequery=somevalue#fragment", TAG)).is_ok());
 
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:dev:{}", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:dev:{}#fragment", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:dev:{}?somequery=somevalue", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:dev:{}?somequery=somevalue#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:dev:{}", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:dev:{}#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:dev:{}?somequery=somevalue", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:dev:{}?somequery=somevalue#fragment", TAG)).is_ok());
 
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:custom:{}", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:custom:{}#fragment", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:custom:{}?somequery=somevalue", TAG)).is_ok());
-    assert!(RunnercDIDUrl::parse(format!("did:runnerc:custom:{}?somequery=somevalue#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:custom:{}", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:custom:{}#fragment", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:custom:{}?somequery=somevalue", TAG)).is_ok());
+    assert!(RunnercDIDUrl::parse(format!("did:idns:custom:{}?somequery=somevalue#fragment", TAG)).is_ok());
   }
 
   #[test]
@@ -413,27 +413,27 @@ mod tests {
     assert!(RunnercDID::parse("did:::").is_err());
     assert!(RunnercDID::parse(format!("did::main:{}", TAG)).is_err());
     // A non-"runnerc" DID method is invalid.
-    assert!(RunnercDID::parse("did:runnerc---::").is_err());
+    assert!(RunnercDID::parse("did:idns---::").is_err());
     // An empty `runnerc-specific-idstring` is invalid.
-    assert!(RunnercDID::parse("did:runnerc:").is_err());
+    assert!(RunnercDID::parse("did:idns:").is_err());
     // Too many components is invalid.
-    assert!(RunnercDID::parse(format!("did:runnerc:custom:shard-1:random:{}", TAG)).is_err());
+    assert!(RunnercDID::parse(format!("did:idns:custom:shard-1:random:{}", TAG)).is_err());
     // Explicit empty network name is invalid (omitting it is still fine)
-    assert!(RunnercDID::parse(format!("did:runnerc::{}", TAG)).is_err());
+    assert!(RunnercDID::parse(format!("did:idns::{}", TAG)).is_err());
     // Invalid network name is invalid.
-    assert!(RunnercDID::parse(format!("did:runnerc:Invalid-Network:{}", TAG)).is_err());
+    assert!(RunnercDID::parse(format!("did:idns:Invalid-Network:{}", TAG)).is_err());
   }
 
   #[test]
   fn test_from_did() {
     let key: String = RunnercDID::encode_key(b"123");
 
-    let did: CoreDID = format!("did:runnerc:{}", key).parse().unwrap();
+    let did: CoreDID = format!("did:idns:{}", key).parse().unwrap();
     let iota_did = RunnercDID::try_from_owned(did).unwrap();
     assert_eq!(iota_did.network_str(), "main");
     assert_eq!(iota_did.tag(), key);
 
-    let did: CoreDID = "did:runnerc:123".parse().unwrap();
+    let did: CoreDID = "did:idns:123".parse().unwrap();
     assert!(RunnercDID::try_from_owned(did).is_err());
 
     let did: CoreDID = format!("did:web:{}", key).parse().unwrap();
@@ -444,25 +444,25 @@ mod tests {
   fn test_network() {
     let key: String = RunnercDID::encode_key(b"123");
 
-    let did: RunnercDID = format!("did:runnerc:{}", key).parse().unwrap();
+    let did: RunnercDID = format!("did:idns:{}", key).parse().unwrap();
     assert_eq!(did.network_str(), "main");
 
-    let did: RunnercDID = format!("did:runnerc:dev:{}", key).parse().unwrap();
+    let did: RunnercDID = format!("did:idns:dev:{}", key).parse().unwrap();
     assert_eq!(did.network_str(), "dev");
 
-    let did: RunnercDID = format!("did:runnerc:test:{}", key).parse().unwrap();
+    let did: RunnercDID = format!("did:idns:test:{}", key).parse().unwrap();
     assert_eq!(did.network_str(), "test");
 
-    let did: RunnercDID = format!("did:runnerc:custom:{}", key).parse().unwrap();
+    let did: RunnercDID = format!("did:idns:custom:{}", key).parse().unwrap();
     assert_eq!(did.network_str(), "custom");
   }
 
   #[test]
   fn test_tag() {
-    let did: RunnercDID = format!("did:runnerc:{}", TAG).parse().unwrap();
+    let did: RunnercDID = format!("did:idns:{}", TAG).parse().unwrap();
     assert_eq!(did.tag(), TAG);
 
-    let did: RunnercDID = format!("did:runnerc:main:{}", TAG).parse().unwrap();
+    let did: RunnercDID = format!("did:idns:main:{}", TAG).parse().unwrap();
     assert_eq!(did.tag(), TAG);
   }
 
@@ -492,8 +492,8 @@ mod tests {
     let tag: String = RunnercDID::encode_key(key.public().as_ref());
 
     // An RunnercDID with "main" as the network can be normalized ("main" removed)
-    let did1: RunnercDID = format!("did:runnerc:{}", tag).parse().unwrap();
-    let did2: RunnercDID = format!("did:runnerc:main:{}", tag).parse().unwrap();
+    let did1: RunnercDID = format!("did:idns:{}", tag).parse().unwrap();
+    let did2: RunnercDID = format!("did:idns:main:{}", tag).parse().unwrap();
     assert_eq!(did1, did2);
   }
 

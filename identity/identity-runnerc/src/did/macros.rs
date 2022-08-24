@@ -19,7 +19,7 @@
 /// let did = try_construct_did!(b"public-key", "com")?;
 /// assert_eq!(
 ///   did.as_str(),
-///   "did:runnerc:com:2xQiiGHDq5gCi1H7utY1ni7cf65fTay3G11S4xKp1vkS"
+///   "did:idns:com:2xQiiGHDq5gCi1H7utY1ni7cf65fTay3G11S4xKp1vkS"
 /// );
 /// # Ok::<(), identity_iota::Error>(())
 /// ```
