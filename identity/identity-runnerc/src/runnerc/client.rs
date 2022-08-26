@@ -106,17 +106,32 @@ impl Client {
     pub async fn publish_json<T: ToJson>(&self, index: &str, data: &T) -> Result<Receipt> {
         println!("index:{},data:{:#?}", index, data.to_json());
         //保存
-        let cid_option = self.set_value(&data.to_json().unwrap()).await;
+        let cid_option = self
+            .set_value(
+                &data
+                    .to_json()
+                    .map_err(|_err| DIDNotFound(String::from("保存到IPFS失败")))?,
+            )
+            .await;
         match cid_option {
-            Some(cid) => Ok(Receipt::new(
-                self.network.clone(),
-                Message {
-                    network_id: 0,
-                    message_id: cid.clone(),
-                    payload: Some(cid.clone()),
-                    nonce: 0,
-                },
-            )),
+            Some(cid) => {
+                //保存did-cid索引
+                let _ = crate::utils::_ciddb_get_request(
+                    format!("/didcid/insert/{}/{}", index, cid).as_str(),
+                )
+                .await
+                .map_err(|_err| DIDNotFound(String::from("ciddb_get_request fail!")))?;
+
+                Ok(Receipt::new(
+                    self.network.clone(),
+                    Message {
+                        network_id: 0,
+                        message_id: cid.clone(),
+                        payload: Some(cid.clone()),
+                        nonce: 0,
+                    },
+                ))
+            }
             None => Err(DIDNotFound(String::from(""))),
         }
         // Err(DIDNotFound(String::from("")))
@@ -139,12 +154,12 @@ impl Client {
     /// Fetch the [`RunnercDocument`] specified by the given [`RunnercDID`].
     pub async fn read_document(&self, did: &RunnercDID) -> Result<RunnercDocument> {
         //
-        let did_string = format!("{}", did);
-
-        tracing::debug!("read_document > {}", did_string);
+        tracing::debug!("read_document > {}", did);
         //根据DID获取CID
-        // TODO cid
-        let cid = String::from("");
+        let cid = crate::utils::_ciddb_get_request(format!("/didcid/get/{}", did).as_str())
+            .await
+            .map_err(|_err| DIDNotFound(String::from("ciddb_get_request fail!")))?;
+
         tracing::debug!("read_document CID string > |{}|", cid);
         if let Some(msg) = self.get_value(&cid).await {
             tracing::debug!("read_document string > |{}|", msg);
